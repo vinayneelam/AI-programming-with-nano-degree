@@ -47,19 +47,18 @@ def process_data(data_dir):
     print("processing data into iterators")
     train_dir, test_dir, valid_dir = data_dir 
     data_transforms = transforms.Compose([
+                                  transforms.RandomRotation((30,70)),
+                                  transforms.RandomResizedCrop(224),
+                                  transforms.RandomHorizontalFlip(p=0.5),
                                   transforms.ToTensor(),
                                   transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
                                  ])
 
-    modified_transforms = transforms.Compose([
-                                  transforms.Resize(255),
-                                  transforms.CenterCrop(224),
-                                  transforms.ToTensor(),
-                                  transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
-                                 ])    
-    train_datasets = datasets.ImageFolder(train_dir, transform=modified_transforms)
-    valid_datasets = datasets.ImageFolder(valid_dir, transform=modified_transforms)
-    test_datasets = datasets.ImageFolder(test_dir, transform=modified_transforms)
+    # Changes mentioned in the feedback are made here.
+    
+    train_datasets = datasets.ImageFolder(train_dir, transform=data_transforms)
+    valid_datasets = datasets.ImageFolder(valid_dir, transform=data_transforms)
+    test_datasets = datasets.ImageFolder(test_dir, transform=data_transforms)
 
     #Criteria: Data batching
     trainloaders = torch.utils.data.DataLoader(train_datasets, batch_size=32, shuffle=True)
