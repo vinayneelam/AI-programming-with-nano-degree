@@ -15,7 +15,7 @@ def parse():
     parser = argparse.ArgumentParser(description='Train a neural network with open of many options!')
     parser.add_argument('data_directory', help='data directory (required)')
     parser.add_argument('--save_dir', help='directory to save a neural network.')
-    parser.add_argument('--arch', help='models to use OPTIONS[vgg,densenet]')
+    parser.add_argument('--arch', help='models to use OPTIONS[vgg,densenet]',choices=['vgg', 'densenet'])
     parser.add_argument('--learning_rate', help='learning rate')
     parser.add_argument('--hidden_units', help='number of hidden units')
     parser.add_argument('--epochs', help='epochs')
@@ -46,17 +46,25 @@ def get_data():
 def process_data(data_dir):
     print("processing data into iterators")
     train_dir, test_dir, valid_dir = data_dir 
-    data_transforms = transforms.Compose([
+    # Changes mentioned in the feedback are made here.
+    train_data_transforms = transforms.Compose([
+                                  transforms.Resize(255),
                                   transforms.RandomRotation((30,70)),
                                   transforms.RandomResizedCrop(224),
                                   transforms.RandomHorizontalFlip(p=0.5),
                                   transforms.ToTensor(),
                                   transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
                                  ])
+    data_transforms = transforms.Compose([
+                                  transforms.Resize(255),
+                                  transforms.CenterCrop(224),
+                                  transforms.ToTensor(),
+                                  transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
+                                 ])
 
     # Changes mentioned in the feedback are made here.
     
-    train_datasets = datasets.ImageFolder(train_dir, transform=data_transforms)
+    train_datasets = datasets.ImageFolder(train_dir, transform=train_data_transforms)
     valid_datasets = datasets.ImageFolder(valid_dir, transform=data_transforms)
     test_datasets = datasets.ImageFolder(test_dir, transform=data_transforms)
 
